@@ -13,6 +13,12 @@ router.get('/:groupId', requireLogin, async (req, res) => {
   const memberIds = members.map(m => m.user_id);
   if (!memberIds.includes(userId)) return res.status(400).send('Access denied');
 
+  // Get already read message IDs BEFORE marking new ones
+  const [readRows] = await db.execute(
+    'SELECT message_id FROM message_reads WHERE user_id = ?', [userId]
+  );
+  const readIds = new Set(readRows.map(r => r.message_id));
+
   const [messages] = await db.execute(`
     SELECT m.id, m.content, m.sent_at, u.username,
       GROUP_CONCAT(CONCAT(r.emoji, ':', r.user_id) SEPARATOR ',') as reactions
@@ -24,6 +30,15 @@ router.get('/:groupId', requireLogin, async (req, res) => {
     ORDER BY m.sent_at ASC
   `, [groupId]);
 
+  // Mark first unread message index for the divider
+  let firstUnreadIndex = -1;
+  messages.forEach((msg, i) => {
+    if (!readIds.has(msg.id) && msg.username !== req.session.user.username) {
+      if (firstUnreadIndex === -1) firstUnreadIndex = i;
+    }
+  });
+
+  // NOW mark all as read (clear happens on visit, unread divider shown before clearing)
   for (const msg of messages) {
     await db.execute(
       'INSERT IGNORE INTO message_reads (message_id, user_id) VALUES (?, ?)',
@@ -43,7 +58,8 @@ router.get('/:groupId', requireLogin, async (req, res) => {
     group: group[0],
     messages,
     groupMembers,
-    groupId
+    groupId,
+    firstUnreadIndex
   });
 });
 

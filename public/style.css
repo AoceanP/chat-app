@@ -326,3 +326,25 @@ button:hover, .btn:hover {
   font-size: 14px;
   cursor: pointer;
 }
+
+.unread-divider {
+  display: flex;
+  align-items: center;
+  margin: 16px 0;
+  gap: 10px;
+}
+
+.unread-divider::before,
+.unread-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e74c3c;
+}
+
+.unread-divider span {
+  color: #e74c3c;
+  font-size: 12px;
+  font-weight: bold;
+  white-space: nowrap;
+}

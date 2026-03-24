@@ -30,7 +30,14 @@
       <% if (messages.length === 0) { %>
         <p class="text-center text-muted" style="margin-top:80px;">No messages yet. Say hello! 👋</p>
       <% } %>
-      <% messages.forEach(msg => { %>
+      <% messages.forEach((msg, i) => { %>
+
+        <% if (i === firstUnreadIndex) { %>
+          <div class="unread-divider">
+            <span>New messages</span>
+          </div>
+        <% } %>
+
         <div class="<%= msg.username === user.username ? 'msg-wrapper-right' : 'msg-wrapper-left' %>">
           <div class="<%= msg.username === user.username ? 'msg-bubble-right' : 'msg-bubble-left' %>">
             <div class="msg-meta"><%= msg.username %> · <%= new Date(msg.sent_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) %></div>
@@ -62,8 +69,17 @@
 
   <script>
     const chatBox = document.getElementById('chat-box');
+    const unreadDivider = document.querySelector('.unread-divider');
+
     function scrollToBottom() { chatBox.scrollTop = chatBox.scrollHeight; }
-    scrollToBottom();
+
+    // Scroll to unread divider if it exists, otherwise scroll to bottom
+    if (unreadDivider) {
+      unreadDivider.scrollIntoView({ block: 'center' });
+    } else {
+      scrollToBottom();
+    }
+
     setInterval(() => {
       const atBottom = chatBox.scrollHeight - chatBox.scrollTop <= chatBox.clientHeight + 50;
       fetch(window.location.href)
