@@ -11,10 +11,10 @@
  * Step 3: Render username and logout button if logged in
 %>
 <nav>
-  <a href="/groups" class="brand">💬 ChatApp</a>
+  <a href="/groups" class="brand">ChatApp</a>
   <% if (locals.user) { %>
     <div class="nav-right">
-      <span class="nav-user">👤 <%= user.username %></span>
+      <span class="nav-user"><%= user.username %></span>
       <a href="/logout" class="logout-btn">Logout</a>
     </div>
   <% } %>
