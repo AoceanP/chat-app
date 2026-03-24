@@ -1,7 +1,9 @@
-<nav style="background:#333; padding:10px 20px; display:flex; justify-content:space-between; align-items:center;">
-  <a href="/groups" style="color:white; text-decoration:none; font-weight:bold;">💬 Chat App</a>
+<nav>
+  <a href="/groups" class="brand">💬 ChatApp</a>
   <% if (locals.user) { %>
-    <span style="color:white;">👤 <%= user.username %></span>
-    <a href="/logout" style="color:white;">Logout</a>
+    <div class="nav-right">
+      <span class="nav-user">👤 <%= user.username %></span>
+      <a href="/logout" class="logout-btn">Logout</a>
+    </div>
   <% } %>
 </nav>
