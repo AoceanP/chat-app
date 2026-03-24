@@ -21,7 +21,7 @@
       </div>
     </details>
 
-    <div style="border:1px solid #ccc; padding:10px; height:400px; overflow-y:scroll; margin:10px 0; border-radius:8px;">
+    <div id="chat-box" style="border:1px solid #ccc; padding:10px; height:400px; overflow-y:scroll; margin:10px 0; border-radius:8px;">
       <% if (messages.length === 0) { %>
         <p style="color:#888;">No messages yet. Say hello!</p>
       <% } %>
@@ -57,5 +57,30 @@
       <button type="submit" style="padding:8px 16px;">Send</button>
     </form>
   </div>
+
+  <script>
+    const chatBox = document.getElementById('chat-box');
+
+    function scrollToBottom() {
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+    scrollToBottom();
+
+    setInterval(() => {
+      const atBottom = chatBox.scrollHeight - chatBox.scrollTop <= chatBox.clientHeight + 50;
+      fetch(window.location.href)
+        .then(r => r.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          const newBox = doc.getElementById('chat-box');
+          if (newBox.innerHTML !== chatBox.innerHTML) {
+            chatBox.innerHTML = newBox.innerHTML;
+            if (atBottom) scrollToBottom();
+          }
+        });
+    }, 3000);
+  </script>
+
 </body>
 </html>

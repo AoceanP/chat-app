@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const db = require('../db');
 
+router.get('/', (req, res) => res.redirect('/login'));
 router.get('/login', (req, res) => res.render('login', { error: null }));
 router.get('/signup', (req, res) => res.render('signup', { error: null }));
 

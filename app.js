@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
-const FileStore = require('session-file-store')(session);
+const { MongoStore } = require('connect-mongo');
 
 const app = express();
 
@@ -15,12 +15,18 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  store: new FileStore({ path: './sessions', ttl: 86400 })
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGODB_URI
+  })
 }));
 
 app.use('/', require('./routes/auth'));
 app.use('/groups', require('./routes/groups'));
 app.use('/messages', require('./routes/messages'));
+
+process.on('unhandledRejection', (err) => {
+  console.log('Warning:', err.message);
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
