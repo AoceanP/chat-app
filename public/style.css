@@ -1,3 +1,13 @@
+/**
+ * @author Aleksandar Panich
+ * @assignment Assignment02
+ *
+ * Global stylesheet for the ChatApp.
+ * Covers layout, components, and page-specific styles.
+ * Used across all EJS views via a single linked stylesheet.
+ */
+
+/* Global reset and body */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -10,6 +20,7 @@ body {
   color: #1a1a2e;
 }
 
+/* Top navigation bar (header.ejs) */
 nav {
   background: #1a1a2e;
   padding: 12px 24px;
@@ -45,6 +56,7 @@ nav a.logout-btn {
   font-size: 13px;
 }
 
+/* Centered page wrapper (login.ejs, signup.ejs, create-group.ejs) */
 .card {
   background: white;
   padding: 32px;
@@ -57,11 +69,13 @@ nav a.logout-btn {
   margin: 60px auto;
 }
 
+/* Wider page wrapper (groups.ejs, chat.ejs) */
 .container-wide {
   max-width: 700px;
   margin: 40px auto;
 }
 
+/* Form inputs (login.ejs, signup.ejs, create-group.ejs, chat.ejs) */
 input[type="text"],
 input[type="password"] {
   display: block;
@@ -73,6 +87,7 @@ input[type="password"] {
   font-size: 14px;
 }
 
+/* Buttons used across all pages */
 button, .btn {
   padding: 10px 20px;
   background: #1a1a2e;
@@ -88,29 +103,35 @@ button:hover, .btn:hover {
   background: #2d2d4e;
 }
 
+/* Red danger button (logout-btn in header) */
 .btn-danger {
   background: #e74c3c;
 }
 
+/* Small button variant (groups.ejs new group button) */
 .btn-sm {
   padding: 6px 14px;
   font-size: 13px;
 }
 
+/* Pill-shaped button (chat.ejs send button) */
 .btn-round {
   border-radius: 24px;
 }
 
+/* Full width button (login.ejs, signup.ejs, create-group.ejs) */
 .btn-full {
   width: 100%;
 }
 
+/* Red error message (login.ejs, signup.ejs) */
 .error {
   color: #e74c3c;
   font-size: 14px;
   margin-bottom: 12px;
 }
 
+/* Utility text helpers used across all pages */
 .text-center {
   text-align: center;
 }
@@ -120,7 +141,7 @@ button:hover, .btn:hover {
   font-size: 14px;
 }
 
-/* Groups page */
+/* Groups page header row with title and new group button */
 .group-list-header {
   display: flex;
   justify-content: space-between;
@@ -128,6 +149,7 @@ button:hover, .btn:hover {
   margin-bottom: 20px;
 }
 
+/* Individual group card row (groups.ejs) */
 .group-item {
   background: white;
   padding: 16px 20px;
@@ -145,6 +167,7 @@ button:hover, .btn:hover {
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
 
+/* Group name and last message date (groups.ejs) */
 .group-name {
   font-weight: bold;
   font-size: 15px;
@@ -156,6 +179,7 @@ button:hover, .btn:hover {
   margin-top: 4px;
 }
 
+/* Red unread count badge (groups.ejs) */
 .badge {
   background: #e74c3c;
   color: white;
@@ -165,7 +189,7 @@ button:hover, .btn:hover {
   font-weight: bold;
 }
 
-/* Chat page */
+/* Chat page header row with group name and members button */
 .chat-header {
   display: flex;
   justify-content: space-between;
@@ -173,6 +197,7 @@ button:hover, .btn:hover {
   margin-bottom: 16px;
 }
 
+/* Members dropdown trigger button (chat.ejs) */
 .members-dropdown {
   position: relative;
 }
@@ -187,6 +212,7 @@ button:hover, .btn:hover {
   list-style: none;
 }
 
+/* Members dropdown panel showing members and invite form (chat.ejs) */
 .members-panel {
   position: absolute;
   right: 0;
@@ -200,6 +226,7 @@ button:hover, .btn:hover {
   z-index: 10;
 }
 
+/* Individual member pill tag inside members panel (chat.ejs) */
 .member-tag {
   display: inline-block;
   background: #f0f0f5;
@@ -209,12 +236,14 @@ button:hover, .btn:hover {
   margin: 3px;
 }
 
+/* Horizontal rule divider inside members panel (chat.ejs) */
 .divider {
   border: none;
   border-top: 1px solid #eee;
   margin: 12px 0;
 }
 
+/* Scrollable message list container (chat.ejs) */
 #chat-box {
   background: white;
   border: 1px solid #e0e0e0;
@@ -225,6 +254,7 @@ button:hover, .btn:hover {
   margin-bottom: 12px;
 }
 
+/* Message bubble wrappers controlling left/right alignment (chat.ejs) */
 .msg-wrapper-right {
   display: flex;
   flex-direction: column;
@@ -239,6 +269,7 @@ button:hover, .btn:hover {
   margin-bottom: 12px;
 }
 
+/* Dark bubble for current user's messages (chat.ejs) */
 .msg-bubble-right {
   max-width: 70%;
   padding: 10px 14px;
@@ -247,6 +278,7 @@ button:hover, .btn:hover {
   border-radius: 12px 12px 0 12px;
 }
 
+/* Light bubble for other users' messages (chat.ejs) */
 .msg-bubble-left {
   max-width: 70%;
   padding: 10px 14px;
@@ -255,12 +287,14 @@ button:hover, .btn:hover {
   border-radius: 12px 12px 12px 0;
 }
 
+/* Small username and timestamp above message content (chat.ejs) */
 .msg-meta {
   font-size: 11px;
   opacity: 0.7;
   margin-bottom: 4px;
 }
 
+/* Row of emoji reactions below each message (chat.ejs) */
 .msg-reactions {
   margin-top: 4px;
   display: flex;
@@ -268,6 +302,7 @@ button:hover, .btn:hover {
   gap: 6px;
 }
 
+/* Individual emoji reaction pill (chat.ejs) */
 .reaction-badge {
   font-size: 16px;
   background: white;
@@ -276,6 +311,7 @@ button:hover, .btn:hover {
   padding: 2px 6px;
 }
 
+/* Emoji select dropdown and add button (chat.ejs) */
 .reaction-form select {
   font-size: 14px;
   border: 1px solid #ddd;
@@ -292,6 +328,7 @@ button:hover, .btn:hover {
   font-size: 13px;
 }
 
+/* Message input row with text field and send button (chat.ejs) */
 .chat-input-row {
   display: flex;
   gap: 8px;
@@ -310,7 +347,7 @@ button:hover, .btn:hover {
   border-radius: 24px;
 }
 
-/* Member list in create group */
+/* Scrollable checkbox list for selecting members (create-group.ejs) */
 .member-list {
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -327,6 +364,7 @@ button:hover, .btn:hover {
   cursor: pointer;
 }
 
+/* red divider marking first unread message (chat.ejs) */
 .unread-divider {
   display: flex;
   align-items: center;

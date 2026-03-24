@@ -1,3 +1,15 @@
+<%#
+ * @author Aleksandar Panich
+ * @version Assignment02
+ *
+ * - Renders the login form for existing users
+ * - Displays validation errors passed from the auth route
+ * - Provides a link to the signup page for new users
+ *
+ * Step 1: Include the shared header partial
+ * Step 2: Display error message if one was passed from the route
+ * Step 3: Render the login form with username and password fields
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,13 +21,17 @@
   <div class="container">
     <div class="card">
       <h2>Login</h2>
-      <% if (error) { %><p class="error"><%= error %></p><% } %>
+      <% if (error) { %>
+        <p class="error"><%= error %></p>
+      <% } %>
       <form method="POST" action="/login">
         <input type="text" name="username" placeholder="Username" required/>
         <input type="password" name="password" placeholder="Password" required/>
         <button type="submit" class="btn-full">Login</button>
       </form>
-      <p class="text-center text-muted" style="margin-top:16px;">No account? <a href="/signup">Sign up</a></p>
+      <p class="text-center text-muted" style="margin-top:16px;">
+        No account? <a href="/signup">Sign up</a>
+      </p>
     </div>
   </div>
 </body>

@@ -1,3 +1,15 @@
+<%#
+ * @author Aleksandar Panich
+ * @version Assignment02
+ *
+ * - Partial template included at the top of every page
+ * - Displays the app brand name and navigation bar
+ * - Shows logged-in username and logout button when a session exists
+ *
+ * Step 1: Render the nav bar with the brand link
+ * Step 2: Check if a user session exists
+ * Step 3: Render username and logout button if logged in
+%>
 <nav>
   <a href="/groups" class="brand">💬 ChatApp</a>
   <% if (locals.user) { %>

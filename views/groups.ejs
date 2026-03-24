@@ -1,3 +1,15 @@
+<%#
+ * @author Aleksandar Panich
+ * @version Assignment02
+ *
+ * - Displays all chat groups the logged-in user belongs to
+ * - Shows last message date and unread count per group
+ * - Provides navigation to create a new group or open a chat
+ *
+ * Step 1: Include the shared header partial
+ * Step 2: Render the list of groups with name, date, and unread badge
+ * Step 3: Show empty state message if user has no groups
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,7 +30,9 @@
       <a href="/messages/<%= group.id %>" class="group-item">
         <div>
           <div class="group-name"><%= group.name %></div>
-          <div class="group-date"><%= group.last_message ? new Date(group.last_message).toLocaleDateString() : 'No messages yet' %></div>
+          <div class="group-date">
+            <%= group.last_message ? new Date(group.last_message).toLocaleDateString() : 'No messages yet' %>
+          </div>
         </div>
         <% if (group.unread > 0) { %>
           <span class="badge"><%= group.unread %></span>

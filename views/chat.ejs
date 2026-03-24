@@ -1,3 +1,17 @@
+<%#
+ * @author Aleksandar Panich
+ * @version 1.0
+ *
+ * - Renders the chat view for a specific group
+ * - Displays messages in order with sender, time, and emoji reactions
+ * - Shows a Discord-style red divider at the first unread message
+ * - Auto-refreshes every 3 seconds to show new messages without reloading
+ * - Provides a members panel with invite by username functionality
+ *
+ * Step 1: Include the shared header partial and render group name
+ * Step 2: Render messages with unread divider at firstUnreadIndex
+ * Step 3: Render send message form and attach auto-refresh script
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,6 +22,7 @@
   <%- include('partials/header') %>
   <div class="container-wide">
 
+    <%# Chat header with group name and members dropdown %>
     <div class="chat-header">
       <h2><%= group.name %></h2>
       <details class="members-dropdown">
@@ -18,6 +33,7 @@
             <span class="member-tag">👤 <%= m.username %></span>
           <% }) %>
           <hr class="divider">
+          <%# Invite form - looks up user by username %>
           <form method="POST" action="/messages/<%= groupId %>/invite">
             <input type="text" name="username" placeholder="Invite by username"/>
             <button type="submit" class="btn-full btn-sm" style="margin-top:4px;">Invite</button>
@@ -26,23 +42,30 @@
       </details>
     </div>
 
+    <%# Scrollable message list %>
     <div id="chat-box">
       <% if (messages.length === 0) { %>
         <p class="text-center text-muted" style="margin-top:80px;">No messages yet. Say hello! 👋</p>
       <% } %>
       <% messages.forEach((msg, i) => { %>
 
+        <%# Show unread divider before first unread message %>
         <% if (i === firstUnreadIndex) { %>
           <div class="unread-divider">
             <span>New messages</span>
           </div>
         <% } %>
 
+        <%# Align messages right for current user, left for others %>
         <div class="<%= msg.username === user.username ? 'msg-wrapper-right' : 'msg-wrapper-left' %>">
           <div class="<%= msg.username === user.username ? 'msg-bubble-right' : 'msg-bubble-left' %>">
-            <div class="msg-meta"><%= msg.username %> · <%= new Date(msg.sent_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) %></div>
+            <div class="msg-meta">
+              <%= msg.username %> · <%= new Date(msg.sent_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) %>
+            </div>
             <div><%= msg.content %></div>
           </div>
+
+          <%# Emoji reactions display and add reaction form %>
           <div class="msg-reactions">
             <% if (msg.reactions) { %>
               <% msg.reactions.split(',').forEach(r => { %>
@@ -61,6 +84,7 @@
       <% }) %>
     </div>
 
+    <%# Send message form %>
     <form method="POST" action="/messages/<%= groupId %>/send" class="chat-input-row">
       <input type="text" name="content" placeholder="Type a message..." required/>
       <button type="submit">Send</button>
@@ -68,12 +92,19 @@
   </div>
 
   <script>
+    /**
+     * Auto-refresh chat box every 3 seconds.
+     *
+     * - Fetches the current page HTML and extracts the chat-box content
+     * - Only updates the DOM if new messages have arrived
+     * - Scrolls to unread divider on first load, bottom otherwise
+     * - Preserves scroll position if user has scrolled up to read history
+     */
     const chatBox = document.getElementById('chat-box');
     const unreadDivider = document.querySelector('.unread-divider');
 
     function scrollToBottom() { chatBox.scrollTop = chatBox.scrollHeight; }
 
-    // Scroll to unread divider if it exists, otherwise scroll to bottom
     if (unreadDivider) {
       unreadDivider.scrollIntoView({ block: 'center' });
     } else {

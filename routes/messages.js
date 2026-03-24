@@ -1,8 +1,37 @@
+/**
+ * @author Aleksandar Panich
+ * @version Assignment02
+ *
+ * - Handles all message-related routes for the ChatApp
+ * - Manages viewing messages, sending messages, reactions, and invites
+ * - Tracks read/unread status per user per message
+ *
+ * Step 1: Verify user is authenticated and is a member of the group
+ * Step 2: Query messages and track which are unread for divider display
+ * Step 3: Mark messages as read, render chat view or redirect
+ */
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
 const { requireLogin } = require('../middleware');
 
+/**
+ * Displays all messages in a chat group.
+ *
+ * - Enforces authorization: returns 400 if user is not a group member
+ * - Tracks first unread message index for Discord-style divider
+ * - Marks all messages as read after determining unread index
+ * - Fetches group members for the members panel
+ *
+ * Step 1: Check user is a member of the group, return 400 if not
+ * Step 2: Get already-read message IDs, find first unread index
+ * Step 3: Mark all messages as read, render chat view
+ *
+ * @param req.params.groupId - ID of the group to view
+ * @param req.session.user.id - ID of the logged-in user
+ * @return Renders chat.ejs with messages and unread index
+ * @throws 400 if user is not a member of the group
+ */
 router.get('/:groupId', requireLogin, async (req, res) => {
   const userId = req.session.user.id;
   const groupId = req.params.groupId;
@@ -13,7 +42,6 @@ router.get('/:groupId', requireLogin, async (req, res) => {
   const memberIds = members.map(m => m.user_id);
   if (!memberIds.includes(userId)) return res.status(400).send('Access denied');
 
-  // Get already read message IDs BEFORE marking new ones
   const [readRows] = await db.execute(
     'SELECT message_id FROM message_reads WHERE user_id = ?', [userId]
   );
@@ -30,7 +58,6 @@ router.get('/:groupId', requireLogin, async (req, res) => {
     ORDER BY m.sent_at ASC
   `, [groupId]);
 
-  // Mark first unread message index for the divider
   let firstUnreadIndex = -1;
   messages.forEach((msg, i) => {
     if (!readIds.has(msg.id) && msg.username !== req.session.user.username) {
@@ -38,7 +65,6 @@ router.get('/:groupId', requireLogin, async (req, res) => {
     }
   });
 
-  // NOW mark all as read (clear happens on visit, unread divider shown before clearing)
   for (const msg of messages) {
     await db.execute(
       'INSERT IGNORE INTO message_reads (message_id, user_id) VALUES (?, ?)',
@@ -46,7 +72,9 @@ router.get('/:groupId', requireLogin, async (req, res) => {
     );
   }
 
-  const [group] = await db.execute('SELECT * FROM chat_groups WHERE id = ?', [groupId]);
+  const [group] = await db.execute(
+    'SELECT * FROM chat_groups WHERE id = ?', [groupId]
+  );
   const [groupMembers] = await db.execute(`
     SELECT u.username FROM users u
     JOIN group_members gm ON u.id = gm.user_id
@@ -63,6 +91,21 @@ router.get('/:groupId', requireLogin, async (req, res) => {
   });
 });
 
+/**
+ * Sends a new message to a chat group.
+ *
+ * - Verifies the user is a member of the group before inserting
+ * - Returns 400 if unauthorized access is attempted
+ * - Redirects back to the chat page after sending
+ *
+ * Step 1: Verify user is a member of the group
+ * Step 2: Insert message into messages table
+ * Step 3: Redirect to chat page
+ *
+ * @param req.params.groupId - ID of the group to send to
+ * @param req.body.content - Message content
+ * @throws 400 if user is not a member of the group
+ */
 router.post('/:groupId/send', requireLogin, async (req, res) => {
   const userId = req.session.user.id;
   const groupId = req.params.groupId;
@@ -81,6 +124,21 @@ router.post('/:groupId/send', requireLogin, async (req, res) => {
   res.redirect(`/messages/${groupId}`);
 });
 
+/**
+ * Adds an emoji reaction to a specific message.
+ *
+ * - Inserts a reaction record linking user, message, and emoji
+ * - Allows duplicate reactions from different users
+ * - Redirects back to the chat page after reacting
+ *
+ * Step 1: Extract messageId, groupId, and emoji from request
+ * Step 2: Insert reaction into reactions table
+ * Step 3: Redirect to chat page
+ *
+ * @param req.params.groupId - ID of the group
+ * @param req.params.messageId - ID of the message to react to
+ * @param req.body.emoji - Emoji character to add as reaction
+ */
 router.post('/:groupId/react/:messageId', requireLogin, async (req, res) => {
   const userId = req.session.user.id;
   const { messageId, groupId } = req.params;
@@ -92,6 +150,20 @@ router.post('/:groupId/react/:messageId', requireLogin, async (req, res) => {
   res.redirect(`/messages/${groupId}`);
 });
 
+/**
+ * Invites a user to a chat group by username.
+ *
+ * - Looks up the user by username in the database
+ * - Silently redirects if username is empty or not found
+ * - Uses INSERT IGNORE to prevent duplicate memberships
+ *
+ * Step 1: Look up user ID by username
+ * Step 2: Insert user into group_members with INSERT IGNORE
+ * Step 3: Redirect back to chat page
+ *
+ * @param req.params.groupId - ID of the group to invite to
+ * @param req.body.username - Username of the user to invite
+ */
 router.post('/:groupId/invite', requireLogin, async (req, res) => {
   const groupId = req.params.groupId;
   const username = req.body.username;
