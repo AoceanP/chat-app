@@ -1,8 +1,8 @@
-# Dependency directories (CRITICAL for assignment)
+# Dependency directories
 node_modules/
 jspm_packages/
 
-# Environment variables (CRITICAL for security)
+# Environment variables
 .env
 .env.local
 .env.development.local
