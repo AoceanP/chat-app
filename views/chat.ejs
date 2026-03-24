@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head><title><%= group.name %></title></head>
+<body>
+  <%- include('partials/header') %>
+  <div style="max-width:700px; margin:30px auto;">
+    <h2><%= group.name %></h2>
+
+    <details>
+      <summary style="cursor:pointer;">👥 Members & Invite</summary>
+      <div style="border:1px solid #ccc; padding:10px; margin:10px 0; border-radius:8px;">
+        <strong>Current members:</strong><br>
+        <% groupMembers.forEach(m => { %>
+          <span style="margin-right:10px;">👤 <%= m.username %></span>
+        <% }) %>
+        <hr>
+        <form method="POST" action="/messages/<%= groupId %>/invite">
+          <input type="text" name="username" placeholder="Enter username to invite" style="padding:6px; width:60%;"/>
+          <button type="submit">Invite</button>
+        </form>
+      </div>
+    </details>
+
+    <div style="border:1px solid #ccc; padding:10px; height:400px; overflow-y:scroll; margin:10px 0; border-radius:8px;">
+      <% if (messages.length === 0) { %>
+        <p style="color:#888;">No messages yet. Say hello!</p>
+      <% } %>
+      <% messages.forEach(msg => { %>
+        <div style="margin-bottom:15px; padding:8px; background:<%= msg.username === user.username ? '#dcf8c6' : '#f1f1f1' %>; border-radius:8px; max-width:80%; margin-left:<%= msg.username === user.username ? 'auto' : '0' %>;">
+          <strong><%= msg.username %></strong>
+          <span style="color:#888; font-size:12px;"> <%= new Date(msg.sent_at).toLocaleString() %></span>
+          <div><%= msg.content %></div>
+          <div style="margin-top:4px;">
+            <% if (msg.reactions) { %>
+              <% msg.reactions.split(',').forEach(r => { %>
+                <span style="font-size:18px;"><%= r.split(':')[0] %></span>
+              <% }) %>
+            <% } %>
+            <form method="POST" action="/messages/<%= groupId %>/react/<%= msg.id %>" style="display:inline;">
+              <select name="emoji" style="font-size:16px;">
+                <option>👍</option>
+                <option>❤️</option>
+                <option>😂</option>
+                <option>😮</option>
+                <option>😢</option>
+              </select>
+              <button type="submit">+</button>
+            </form>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+
+    <form method="POST" action="/messages/<%= groupId %>/send" style="display:flex; gap:8px;">
+      <input type="text" name="content" placeholder="Type your message here" required
+        style="flex:1; padding:8px; border-radius:8px; border:1px solid #ccc;"/>
+      <button type="submit" style="padding:8px 16px;">Send</button>
+    </form>
+  </div>
+</body>
+</html>
